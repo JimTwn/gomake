@@ -287,50 +287,6 @@ func GoEnvList() map[string]string {
 	return out
 }
 
-// List of known Go environment variable keys.
-const (
-	ENV_GO111MODULE  = "GO111MODULE"
-	ENV_GOARCH       = "GOARCH"
-	ENV_GOBIN        = "GOBIN"
-	ENV_GOCACHE      = "GOCACHE"
-	ENV_GOENV        = "GOENV"
-	ENV_GOEXE        = "GOEXE"
-	ENV_GOEXPERIMENT = "GOEXPERIMENT"
-	ENV_GOFLAGS      = "GOFLAGS"
-	ENV_GOHOSTARCH   = "GOHOSTARCH"
-	ENV_GOHOSTOS     = "GOHOSTOS"
-	ENV_GOINSECURE   = "GOINSECURE"
-	ENV_GOMODCACHE   = "GOMODCACHE"
-	ENV_GONOPROXY    = "GONOPROXY"
-	ENV_GONOSUMDB    = "GONOSUMDB"
-	ENV_GOOS         = "GOOS"
-	ENV_GOPATH       = "GOPATH"
-	ENV_GOPRIVATE    = "GOPRIVATE"
-	ENV_GOPROXY      = "GOPROXY"
-	ENV_GOROOT       = "GOROOT"
-	ENV_ENV_GOSUMDB  = "GOSUMDB"
-	ENV_GOTMPDIR     = "GOTMPDIR"
-	ENV_GOTOOLCHAIN  = "GOTOOLCHAIN"
-	ENV_GOTOOLDIR    = "GOTOOLDIR"
-	ENV_GOVCS        = "GOVCS"
-	ENV_GOVERSION    = "GOVERSION"
-	ENV_GCCGO        = "GCCGO"
-	ENV_GOAMD64      = "GOAMD64"
-	ENV_AR           = "AR"
-	ENV_CC           = "CC"
-	ENV_CXX          = "CXX"
-	ENV_CGO_ENABLED  = "CGO_ENABLED"
-	ENV_GOMOD        = "GOMOD"
-	ENV_GOWORK       = "GOWORK"
-	ENV_CGO_CFLAGS   = "CGO_CFLAGS"
-	ENV_CGO_CPPFLAGS = "CGO_CPPFLAGS"
-	ENV_CGO_CXXFLAGS = "CGO_CXXFLAGS"
-	ENV_CGO_FFLAGS   = "CGO_FFLAGS"
-	ENV_CGO_LDFLAGS  = "CGO_LDFLAGS"
-	ENV_PKG_CONFIG   = "PKG_CONFIG"
-	ENV_GOGCCFLAGS   = "GOGCCFLAGS"
-)
-
 // GoEnv returns the value for a specific Go environment variable.
 // Returns false if can't be found. Note that the returned string can
 // be empty if no value is defined but the key is present.
