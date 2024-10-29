@@ -14,9 +14,7 @@ Gomake amends Go's own build system where needed and otherwise seeks to stay out
 ### Usage
 
 ```
-$ git clone https://github.com/jimtwn/gomake
-$ cd gomake
-$ go install
+$ go get https://github.com/jimtwn/gomake
 ```
 
 
