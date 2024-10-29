@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"log"
-	"os"
 	"runtime"
 	"strings"
 
@@ -27,13 +25,13 @@ func main() {
 	// `defer f()` alone is not enough if a fatal error has occurred
 	// as any os.Exit calls eliminate pending defers.
 	defer func() {
-		x := recover()
+		// x := recover()
 		b.DeleteDirs(buildDir)
 
-		if x != nil {
-			fmt.Fprintln(os.Stderr, x)
-			os.Exit(1)
-		}
+		// if x != nil {
+		// 	fmt.Fprintln(os.Stderr, x)
+		// 	os.Exit(1)
+		// }
 	}()
 
 	run(buildDir)
@@ -61,9 +59,6 @@ func run(buildDir string) {
 	// Run `go build` in the buildDir to generate our custom build program.
 	builderName := getBuilderName()
 	b.GoBuild(buildDir, "-o", builderName)
-
-	// Ensure the output dir exists.
-	b.MkdirAll(options.OutputDir, 0700)
 
 	// Finally, run our newly built program in the current directory.
 	b.Run(b.Join(buildDir, builderName))
@@ -159,7 +154,7 @@ func verifyBuildFile(rules []string) []string {
 			}
 
 			// Does the function have the `//gomake:default` decorator?
-			if !hasDefaultDecorator(fn.Doc.List) {
+			if fn.Doc == nil || !hasDefaultDecorator(fn.Doc.List) {
 				continue
 			}
 

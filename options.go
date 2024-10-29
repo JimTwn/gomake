@@ -9,9 +9,8 @@ import (
 )
 
 type Options struct {
-	Root      string
-	Rules     []string
-	OutputDir string
+	Root  string
+	Rules []string
 }
 
 // ParseOptions parses commandline arguments and returns build options.
@@ -32,7 +31,6 @@ func ParseOptions() Options {
 	help := flag.Bool("help", false, "Print this help.")
 	version := flag.Bool("version", false, "Prints version information.")
 	flag.StringVar(&opt.Root, "C", ".", "Build root directory.")
-	flag.StringVar(&opt.OutputDir, "out", opt.OutputDir, "Output directory, relative to the build root.")
 	flag.Parse()
 
 	if *help {
@@ -55,9 +53,5 @@ func newOptions() Options {
 	if err != nil {
 		b.Throw("os.Getwd: %v", err)
 	}
-
-	return Options{
-		Root:      cwd,
-		OutputDir: "bin",
-	}
+	return Options{Root: cwd}
 }
