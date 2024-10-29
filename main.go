@@ -123,8 +123,8 @@ func runBuildTemplate(dir string, rules []string) {
 // It additionalyl checks of the file contains all functions reflecting the
 // build rules invoked by the user.
 //
-// If @rules is empty, this extracts any defined BuildXXX functions and
-// uses those instead.
+// If @rules is empty, this finds any defined BuildXXX functions with
+// `//gomake:default` decorators and uses those instead.
 func verifyBuildFile(rules []string) []string {
 	// Check if there is a `build.go` file in the current directory.
 	if !b.FileExists("build.go") {
@@ -133,7 +133,7 @@ func verifyBuildFile(rules []string) []string {
 
 	// Parse the source.
 	fset := token.NewFileSet()
-	src, err := parser.ParseFile(fset, "build.go", nil, parser.AllErrors)
+	src, err := parser.ParseFile(fset, "build.go", nil, parser.AllErrors|parser.ParseComments)
 	if err != nil {
 		b.Throw("parser.ParseFile: %v", err)
 	}
@@ -153,13 +153,32 @@ func verifyBuildFile(rules []string) []string {
 
 	for _, d := range src.Decls {
 		if fn, ok := d.(*ast.FuncDecl); ok {
-			if strings.HasPrefix(fn.Name.Name, "Build") {
-				out = append(out, strings.ToLower(fn.Name.Name[5:]))
+			// Does the function have the expected name?
+			if !strings.HasPrefix(fn.Name.Name, "Build") && len(fn.Name.Name) > 5 {
+				continue
 			}
+
+			// Does the function have the `//gomake:default` decorator?
+			if !hasDefaultDecorator(fn.Doc.List) {
+				continue
+			}
+
+			out = append(out, strings.ToLower(fn.Name.Name[5:]))
 		}
 	}
 
 	return out
+}
+
+// hasDefaultDecorator retursn true if @list contains a comment representing
+// the `//gomake:default` decorator.
+func hasDefaultDecorator(list []*ast.Comment) bool {
+	for _, v := range list {
+		if strings.Contains(v.Text, "//gomake:default") {
+			return true
+		}
+	}
+	return false
 }
 
 // containsFunction returns true if @src contains a function for a rule with the given @name.

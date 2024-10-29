@@ -7,11 +7,8 @@ import (
 
 var assetTemplate = template.Must(template.New("build").Parse(`package main
 
-import "log"
-
 func main() {
 {{range $fn := .Functions}}
-	log.Println("> {{$fn}}")
 	{{$fn}}()
 {{end}}
 }
