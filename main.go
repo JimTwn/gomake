@@ -1,15 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"log"
+	"os"
 	"runtime"
 	"strings"
 
 	b "github.com/jimtwn/gomake/build"
 )
+
+// DecorateDefault marks functions as being by default when
+// gomake is invoked without providing explicit rule names.
+// E.g.: `gomake` as opposed to `gomake install`.
+const DecorateDefault = "//gomake:default"
 
 func main() {
 	log.Default().SetFlags(0)
@@ -25,13 +32,18 @@ func main() {
 	// `defer f()` alone is not enough if a fatal error has occurred
 	// as any os.Exit calls eliminate pending defers.
 	defer func() {
-		// x := recover()
+		x := recover()
 		b.DeleteDirs(buildDir)
 
-		// if x != nil {
-		// 	fmt.Fprintln(os.Stderr, x)
-		// 	os.Exit(1)
-		// }
+		if x != nil {
+			switch x.(type) {
+			case *runtime.Error:
+				panic(x)
+			default:
+				fmt.Fprintln(os.Stderr, x)
+				os.Exit(1)
+			}
+		}
 	}()
 
 	run(buildDir)
@@ -169,7 +181,7 @@ func verifyBuildFile(rules []string) []string {
 // the `//gomake:default` decorator.
 func hasDefaultDecorator(list []*ast.Comment) bool {
 	for _, v := range list {
-		if strings.Contains(v.Text, "//gomake:default") {
+		if strings.Contains(v.Text, DecorateDefault) {
 			return true
 		}
 	}
