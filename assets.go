@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "embed"
+	"fmt"
 	"html/template"
 )
 
@@ -14,15 +15,15 @@ func main() {
 }
 `))
 
-const assetModFile = `
+var assetModFile = fmt.Sprintf(`
 module gomake
 
 go 1.21.5
 
 require (
-	github.com/jimtwn/gomake v0.1.0
+	github.com/jimtwn/gomake %s
 )
-`
+`, AppVersion)
 
 // This program should include a copy of the gomake library code.
 // We will be adding this to any build.go program we generate, so that
@@ -34,7 +35,7 @@ var assetLibraryMainGo []byte
 //go:embed go.mod
 var assetLibraryGoMod []byte
 
-const assetLibraryModulesTxt = `
-# github.com/jimtwn/gomake v0.1.0
+var assetLibraryModulesTxt = fmt.Sprintf(`
+# github.com/jimtwn/gomake %s
 ## explicit; go 1.21.5
-`
+`, AppVersion)
