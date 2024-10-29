@@ -1,2 +1,0 @@
-build:
-    ☐ Maybe don't use Zig as the build system, as that adds the entire Zig toolchain as a dependency.
