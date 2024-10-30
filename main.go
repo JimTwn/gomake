@@ -73,7 +73,7 @@ func run(buildDir string) {
 	b.GoBuild(buildDir, "-o", builderName)
 
 	// Finally, run our newly built program in the current directory.
-	b.Run(b.Join(buildDir, builderName))
+	b.Run(true, b.Join(buildDir, builderName))
 }
 
 // getBuilderName determines the build program file name.
@@ -181,7 +181,7 @@ func verifyBuildFile(rules []string) []string {
 // the `//gomake:default` decorator.
 func hasDefaultDecorator(list []*ast.Comment) bool {
 	for _, v := range list {
-		if strings.Contains(v.Text, DecorateDefault) {
+		if strings.EqualFold(v.Text, DecorateDefault) {
 			return true
 		}
 	}

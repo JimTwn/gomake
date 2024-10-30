@@ -254,7 +254,7 @@ func GoGet(dir string, args ...string) {
 // GoEnvList runs `go env` and returns all defined variables.
 func GoEnvList() map[string]string {
 	var stderr, stdout bytes.Buffer
-	if !RunRedirected(nil, &stdout, &stderr, "go", "env") {
+	if !RunRedirected(nil, &stdout, &stderr, true, "go", "env") {
 		Throw("GoEnv: %s", stderr.Bytes())
 	}
 
@@ -365,9 +365,11 @@ func SysEnv(key string) (string, bool) {
 // Run runs the given command with specified arguments.
 // This does not redirect stdin, stdout or stderr. If the
 // command returns error, it is treated as a fatal error.
-func Run(command string, args ...string) {
+//
+// @wait determines if this call should wait for the command to finish or not.
+func Run(wait bool, command string, args ...string) {
 	var stderr bytes.Buffer
-	if !RunRedirected(nil, nil, &stderr, command, args...) {
+	if !RunRedirected(nil, nil, &stderr, wait, command, args...) {
 		Throw("%s", stderr.Bytes())
 	}
 }
@@ -376,12 +378,15 @@ func Run(command string, args ...string) {
 // This function allows redirecting of stdin- stdout- and stderr if desired.
 // Specify nil for those you are not interested in.
 //
+// @wait determines if this call should wait for the command to finish or not.
+//
 // If the executed command generates an error and stderr is specified, this
 // call returns false. Returns true otherwise.
 func RunRedirected(
 	stdin io.Reader,
 	stdout io.Writer,
 	stderr io.Writer,
+	wait bool,
 	command string,
 	args ...string,
 ) bool {
@@ -405,15 +410,17 @@ func RunRedirected(
 	cmd.Stdout = stdout
 	cmd.Stdin = stdin
 
-	if err := cmd.Start(); err != nil {
-		Throw("RunRedirected: %v", err)
-	}
-
-	if err := cmd.Wait(); err != nil {
-		if stderr != nil {
-			return false
+	if wait {
+		if err := cmd.Run(); err != nil {
+			if stderr != nil {
+				return false
+			}
+			Throw("RunRedirected: %v", err)
 		}
-		Throw("RunRedirected: %v", err)
+	} else {
+		if err := cmd.Start(); err != nil {
+			Throw("RunRedirected: %v", err)
+		}
 	}
 
 	return true
