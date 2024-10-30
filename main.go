@@ -9,37 +9,21 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
 // Build runs all build units defined by the given arguments (usually commandline arguments.)
 // If no explicit unit is specified, this runs all units marked as default.
-func Build(args []string) {
-	go func() {
-		x := recover()
-		if x == nil {
-			return
-		}
-
-		switch x.(type) {
-		case *runtime.Error:
-			panic(x)
-		default:
-			fmt.Fprintln(os.Stderr, x)
-			os.Exit(1)
-		}
-	}()
-
+func Build(units []string) {
 	unit_lock.Lock()
 	defer unit_lock.Unlock()
 
-	if len(args) == 0 {
-		args = getDefaultUnits()
+	if len(units) == 0 {
+		units = getDefaultUnits()
 	}
 
-	for _, arg := range args {
-		runUnit(arg)
+	for _, unit := range units {
+		runUnit(unit)
 	}
 }
 
@@ -62,7 +46,8 @@ func runUnit(name string) {
 	name = strings.ToLower(name)
 	unit, ok := unit_cache[name]
 	if !ok {
-		Throw("unknown unit name %q", name)
+		fmt.Fprintf(os.Stderr, "unknown unit name %q\n", name)
+		os.Exit(1)
 	}
 	unit.Run()
 }
