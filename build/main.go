@@ -362,7 +362,7 @@ func SysEnv(key string) (string, bool) {
 	return os.LookupEnv(key)
 }
 
-// Run runs the given system command with specified arguments.
+// Run runs the given command with specified arguments.
 // This does not redirect stdin, stdout or stderr. If the
 // command returns error, it is treated as a fatal error.
 func Run(command string, args ...string) {
@@ -372,9 +372,9 @@ func Run(command string, args ...string) {
 	}
 }
 
-// RunRedirected runs the given system command with specified arguments.
+// RunRedirected runs the given command with specified arguments.
 // This function allows redirecting of stdin- stdout- and stderr if desired.
-// Specify nil for those you are not interested in using.
+// Specify nil for those you are not interested in.
 //
 // If the executed command generates an error and stderr is specified, this
 // call returns false. Returns true otherwise.
@@ -385,7 +385,16 @@ func RunRedirected(
 	command string,
 	args ...string,
 ) bool {
-	cmd := exec.Command(command, args...)
+	path, err := exec.LookPath(command)
+	if err != nil {
+		if errors.Is(err, exec.ErrDot) {
+			path = Abs(path)
+		} else {
+			Throw("RunRedirected: %v", err)
+		}
+	}
+
+	cmd := exec.Command(path, args...)
 	cmd.Stderr = stderr
 	cmd.Stdout = stdout
 	cmd.Stdin = stdin
