@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// Build runs all build units defined by the given arguments (usually commandline arguments.)
+// Build runs all build units defined in the given set (usually commandline arguments.)
 // If no explicit unit is specified, this runs all units marked as default.
 func Build(units []string) {
 	unit_lock.Lock()
