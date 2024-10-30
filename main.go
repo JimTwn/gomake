@@ -34,9 +34,26 @@ func Build(args []string) {
 	unit_lock.Lock()
 	defer unit_lock.Unlock()
 
+	if len(args) == 0 {
+		args = getDefaultUnits()
+	}
+
 	for _, arg := range args {
 		runUnit(arg)
 	}
+}
+
+// getDefaultUnits returns the names for all units marked "default".
+func getDefaultUnits() []string {
+	out := make([]string, 0, len(unit_cache))
+
+	for name, unit := range unit_cache {
+		if unit.IsDefault() {
+			out = append(out, name)
+		}
+	}
+
+	return out
 }
 
 // runUnit runs the unit by the given name, if it exists and is not already finished.

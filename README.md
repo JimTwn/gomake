@@ -2,13 +2,11 @@
 
 **Note**: Highly experimental and flaky. Do not use in production.
 
-Gomake is a library and commandline tool used to facilitate building of Go projects and any additional necessary operations.
+Gomake is a library used to facilitate building of complex Go projects and any additional necessary operations.
 
-The reasoning being that Go by itself, while useful, has a limited build system. It does not handle multi-project setups very well. Additionally, it is non-trivial to deal with external resources that need to be deployed in different ways depending on debug- or release modes. Build tags are not sufficient for this.
+The reasoning being that Go by itself, while useful, has a limited build system. It does not handle multi-project setups very well. Additionally, it is non-trivial to deal with external resources that need to be deployed in different ways depending on debug- or release modes. Build tags are not sufficient for this. The usual solution is to provide something like a Makefile which in turn invokes Go where needed. This works, but adds a dependency on Make or whatever other thirdparty build system one uses. We opt instead to write our build scripts in Go as a full Go program, which is compiled in the main project directory. From there it is invoked to build the desired project components.
 
-Gomake uses a mix of Go's Benchmark- and Test-file setup, combined with the way Zig handles building. This means each project creates a `build.go` file in its root. This file defines build rules with all necessary operations. It is itself a regular Go file which is compiled and run by the `gomake` command line tool upon invocation. The build file imports the `gomake/build` package which offers all the necessary tools to facilitate easy build management.
-
-Gomake amends Go's own build system where needed and otherwise seeks to stay out of its way.
+Each project creates a new Go executable package (usually in a `build` subdirectory.) This package is our build program and imports the `gomake` linrary. Refer to the `example` directory for a sample project.
 
 
 ### Usage
