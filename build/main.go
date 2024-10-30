@@ -385,12 +385,18 @@ func RunRedirected(
 	command string,
 	args ...string,
 ) bool {
-	path, err := exec.LookPath(command)
-	if err != nil {
-		if errors.Is(err, exec.ErrDot) {
-			path = Abs(path)
-		} else {
-			Throw("RunRedirected: %v", err)
+	var path string
+	if FileExists(command) {
+		path = Abs(command)
+	} else {
+		var err error
+		path, err = exec.LookPath(command)
+		if err != nil {
+			if errors.Is(err, exec.ErrDot) {
+				path = Abs(path)
+			} else {
+				Throw("RunRedirected: %v", err)
+			}
 		}
 	}
 
